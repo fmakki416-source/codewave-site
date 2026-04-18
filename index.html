@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FreshMart - Your Neighborhood Supermarket</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #222; line-height: 1.5; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  /* Header */
+  header { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #eee; z-index: 10; }
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .logo { font-size: 1.5rem; font-weight: 800; color: #2d7a2d; }
+  .logo span { color: #f5a623; }
+  .nav ul { display: flex; gap: 2rem; list-style: none; }
+  .nav a:hover { color: #2d7a2d; }
+  .search { display: flex; align-items: center; background: #f4f4f4; border-radius: 24px; padding: 0.4rem 1rem; gap: 0.5rem; }
+  .search input { border: none; background: transparent; outline: none; width: 200px; }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, #e8f5e9 0%, #fff3e0 100%); padding: 4rem 2rem; text-align: center; }
+  .hero h1 { font-size: 2.75rem; margin-bottom: 1rem; color: #1b4d1b; }
+  .hero p { font-size: 1.2rem; color: #555; margin-bottom: 2rem; }
+  .btn { display: inline-block; background: #2d7a2d; color: #fff; padding: 0.8rem 2rem; border-radius: 24px; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s; }
+  .btn:hover { background: #226322; }
+  .btn-outline { background: #fff; color: #2d7a2d; border: 2px solid #2d7a2d; margin-left: 0.5rem; }
+  .btn-outline:hover { background: #2d7a2d; color: #fff; }
+
+  /* Sections */
+  section { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+  section h2 { font-size: 2rem; margin-bottom: 2rem; text-align: center; color: #1b4d1b; }
+
+  /* Categories */
+  .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; }
+  .category { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 2rem 1rem; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+  .category:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .category .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .category h3 { font-size: 1rem; color: #333; }
+
+  /* Products */
+  .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+  .product { background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; transition: box-shadow 0.2s; }
+  .product:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .product .img-wrap { background: #fafafa; font-size: 4rem; text-align: center; padding: 2rem; }
+  .product .info { padding: 1rem; }
+  .product h3 { font-size: 1rem; margin-bottom: 0.25rem; }
+  .product .unit { color: #888; font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .product .price-row { display: flex; align-items: center; justify-content: space-between; }
+  .product .price { font-weight: 700; color: #2d7a2d; font-size: 1.1rem; }
+  .product .old-price { text-decoration: line-through; color: #aaa; font-size: 0.85rem; margin-right: 0.5rem; }
+  .product .add { background: #2d7a2d; color: #fff; border: none; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
+  .product .add:hover { background: #226322; }
+  .badge { position: absolute; background: #f5a623; color: #fff; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; margin: 0.5rem; font-weight: 600; }
+  .product { position: relative; }
+
+  /* Deals banner */
+  .deals { background: #2d7a2d; color: #fff; border-radius: 16px; padding: 3rem; text-align: center; margin: 2rem auto; max-width: 1200px; }
+  .deals h2 { color: #fff; }
+  .deals p { margin-bottom: 1.5rem; opacity: 0.9; }
+
+  /* Features */
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; text-align: center; }
+  .feature .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .feature h3 { margin-bottom: 0.5rem; }
+  .feature p { color: #666; font-size: 0.95rem; }
+
+  /* Footer */
+  footer { background: #1b4d1b; color: #ddd; padding: 3rem 2rem 1rem; }
+  .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
+  .footer-grid h4 { color: #fff; margin-bottom: 1rem; }
+  .footer-grid ul { list-style: none; }
+  .footer-grid li { margin-bottom: 0.5rem; font-size: 0.9rem; }
+  .footer-grid a:hover { color: #f5a623; }
+  .copyright { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #2d5a2d; font-size: 0.85rem; opacity: 0.7; }
+
+  @media (max-width: 700px) {
+    .nav ul { display: none; }
+    .hero h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">Fresh<span>Mart</span></div>
+    <ul>
+      <li><a href="#categories">Shop</a></li>
+      <li><a href="#deals">Deals</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="search">
+      <span>🔍</span>
+      <input type="text" placeholder="Search groceries..." />
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Fresh Groceries, Delivered Daily</h1>
+  <p>Locally sourced produce, pantry staples, and everyday essentials — all in one place.</p>
+  <a href="#categories" class="btn">Shop Now</a>
+  <a href="#deals" class="btn btn-outline">View Deals</a>
+</div>
+
+<section id="categories">
+  <h2>Shop by Category</h2>
+  <div class="categories">
+    <div class="category"><div class="icon">🥬</div><h3>Fresh Produce</h3></div>
+    <div class="category"><div class="icon">🥛</div><h3>Dairy & Eggs</h3></div>
+    <div class="category"><div class="icon">🍞</div><h3>Bakery</h3></div>
+    <div class="category"><div class="icon">🥩</div><h3>Meat & Seafood</h3></div>
+    <div class="category"><div class="icon">🧃</div><h3>Beverages</h3></div>
+    <div class="category"><div class="icon">🍿</div><h3>Snacks</h3></div>
+    <div class="category"><div class="icon">🧻</div><h3>Household</h3></div>
+    <div class="category"><div class="icon">❄️</div><h3>Frozen</h3></div>
+  </div>
+</section>
+
+<section id="featured">
+  <h2>Featured Products</h2>
+  <div class="products">
+    <div class="product">
+      <span class="badge">-20%</span>
+      <div class="img-wrap">🍎</div>
+      <div class="info">
+        <h3>Organic Apples</h3>
+        <div class="unit">1 kg bag</div>
+        <div class="price-row">
+          <div><span class="old-price">$4.99</span><span class="price">$3.99</span></div>
+          <button class="add">Add +</button>
+        </div>
+      </div>
+    </div>
+    <div class="product">
+      <div class="img-wrap">🥑</div>
+      <div class="info">
+        <h3>Avocados</h3>
+        <div class="unit">Pack of 4</div>
+        <div class="price-row">
+          <span class="price">$5.49</span>
+          <button class="add">Add +</button>
+        </div>
+      </div>
+    </div>
+    <div class="product">
+      <span class="badge">NEW</span>
+      <div class="img-wrap">🥛</div>
+      <div class="info">
+        <h3>Whole Milk</h3>
+        <div class="unit">1 gallon</div>
+        <div class="price-row">
+          <span class="price">$3.29</span>
+          <button class="add">Add +</button>
+        </div>
+      </div>
+    </div>
+    <div class="product">
+      <div class="img-wrap">🍞</div>
+      <div class="info">
+        <h3>Sourdough Bread</h3>
+        <div class="unit">Fresh, 500g</div>
+        <div class="price-row">
+          <span class="price">$4.79</span>
+          <button class="add">Add +</button>
+        </div>
+      </div>
+    </div>
+    <div class="product">
+      <span class="badge">-15%</span>
+      <div class="img-wrap">🥚</div>
+      <div class="info">
+        <h3>Free-Range Eggs</h3>
+        <div class="unit">Dozen</div>
+        <div class="price-row">
+          <div><span class="old-price">$6.49</span><span class="price">$5.49</span></div>
+          <button class="add">Add +</button>
+        </div>
+      </div>
+    </div>
+    <div class="product">
+      <div class="img-wrap">🍌</div>
+      <div class="info">
+        <h3>Bananas</h3>
+        <div class="unit">Per lb</div>
+        <div class="price-row">
+          <span class="price">$0.69</span>
+          <button class="add">Add +</button>
+        </div>
+      </div>
+    </div>
+    <div class="product">
+      <div class="img-wrap">🧀</div>
+      <div class="info">
+        <h3>Cheddar Cheese</h3>
+        <div class="unit">Block, 250g</div>
+        <div class="price-row">
+          <span class="price">$6.99</span>
+          <button class="add">Add +</button>
+        </div>
+      </div>
+    </div>
+    <div class="product">
+      <span class="badge">HOT</span>
+      <div class="img-wrap">🍅</div>
+      <div class="info">
+        <h3>Vine Tomatoes</h3>
+        <div class="unit">500g</div>
+        <div class="price-row">
+          <span class="price">$2.99</span>
+          <button class="add">Add +</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="deals" class="deals">
+  <h2>Weekend Flash Sale</h2>
+  <p>Save up to 30% on hundreds of items — this weekend only.</p>
+  <a href="#featured" class="btn" style="background:#f5a623">Grab the Deals</a>
+</div>
+
+<section id="about">
+  <h2>Why Choose FreshMart</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="icon">🚚</div>
+      <h3>Free Delivery</h3>
+      <p>Free same-day delivery on orders over $40.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🌱</div>
+      <h3>Locally Sourced</h3>
+      <p>Partnering with 50+ local farms and producers.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">💰</div>
+      <h3>Best Prices</h3>
+      <p>Weekly deals and a price-match guarantee.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🕒</div>
+      <h3>Open 7 Days</h3>
+      <p>7am - 10pm, every day of the week.</p>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="footer-grid">
+    <div>
+      <h4>FreshMart</h4>
+      <p style="font-size:0.9rem;opacity:0.85;">Your neighborhood supermarket for fresh, affordable groceries.</p>
+    </div>
+    <div>
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#featured">Featured</a></li>
+        <li><a href="#deals">Deals</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Store Locator</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul>
+        <li>📍 123 Market St, Springfield</li>
+        <li>📞 (555) 123-4567</li>
+        <li>✉️ hello@freshmart.com</li>
+      </ul>
+    </div>
+  </div>
+  <div class="copyright">© 2026 FreshMart. All rights reserved.</div>
+</footer>
+
+<script>
+  // Simple "add to cart" feedback
+  document.querySelectorAll('.add').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const original = btn.textContent;
+      btn.textContent = '✓ Added';
+      btn.style.background = '#f5a623';
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.style.background = '';
+      }, 1200);
+    });
+  });
+</script>
+
+</body>
+</html>
