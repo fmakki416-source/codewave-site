@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vista — The World's Most Beautiful Places</title>
+<meta name="description" content="A photo-first showcase of the world's most scenic and photogenic places — mountains, coastlines, forests, historic towns and deserts." />
+<style>
+  :root {
+    --bg: #0f1115;
+    --bg-soft: #171a21;
+    --card: #1b1f28;
+    --text: #f2f3f5;
+    --muted: #a2a8b4;
+    --accent: #e0a458;
+    --line: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .logo { font-family: Georgia, 'Times New Roman', 'Iowan Old Style', serif; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(15,17,21,0.72);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between;
+    max-width: 1240px; margin: 0 auto; padding: 1rem 1.5rem; }
+  .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.5px; }
+  .logo span { color: var(--accent); }
+  .nav ul { display: flex; gap: 1.8rem; list-style: none; font-size: 0.95rem; }
+  .nav a { color: var(--muted); transition: color 0.2s; }
+  .nav a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    position: relative; min-height: 78vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 5rem 1.5rem;
+    background-image:
+      linear-gradient(180deg, rgba(15,17,21,0.35) 0%, rgba(15,17,21,0.55) 55%, var(--bg) 100%),
+      url('https://picsum.photos/id/29/1920/1080');
+    background-size: cover; background-position: center;
+  }
+  .hero .eyebrow { text-transform: uppercase; letter-spacing: 4px; font-size: 0.78rem;
+    color: var(--accent); margin-bottom: 1.2rem; font-weight: 600; }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); line-height: 1.08; max-width: 14ch;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.5); }
+  .hero p { color: #e6e8ec; font-size: clamp(1rem, 2.2vw, 1.25rem); max-width: 52ch;
+    margin: 1.4rem auto 2.2rem; text-shadow: 0 1px 12px rgba(0,0,0,0.55); }
+  .btn {
+    display: inline-block; background: var(--accent); color: #1a1306;
+    padding: 0.85rem 2rem; border-radius: 999px; font-weight: 700; font-size: 0.95rem;
+    border: none; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(224,164,88,0.35); }
+  .scroll-hint { position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
+    color: var(--muted); font-size: 1.4rem; animation: bob 1.8s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+  /* Gallery section */
+  .gallery-wrap { max-width: 1240px; margin: 0 auto; padding: 4.5rem 1.5rem 2rem; }
+  .section-head { text-align: center; margin-bottom: 2.2rem; }
+  .section-head h2 { font-size: clamp(1.9rem, 4vw, 2.6rem); }
+  .section-head p { color: var(--muted); margin-top: 0.6rem; }
+
+  /* Filters */
+  .filters { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-bottom: 2.5rem; }
+  .chip {
+    background: var(--bg-soft); color: var(--muted); border: 1px solid var(--line);
+    padding: 0.5rem 1.1rem; border-radius: 999px; cursor: pointer; font-size: 0.88rem;
+    transition: all 0.18s;
+  }
+  .chip:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+  .chip.active { background: var(--accent); color: #1a1306; border-color: var(--accent); font-weight: 600; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+  .card {
+    position: relative; border-radius: 14px; overflow: hidden; cursor: pointer;
+    background: var(--card); aspect-ratio: 4 / 3; box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .card.in { opacity: 1; transform: none; }
+  .card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+  .card:hover img { transform: scale(1.07); }
+  .card .overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 1.1rem 1.2rem;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.78) 100%);
+  }
+  .card .overlay .tag { align-self: flex-start; font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #1a1306; background: var(--accent); padding: 0.2rem 0.6rem;
+    border-radius: 6px; margin-bottom: auto; font-weight: 700; }
+  .card .overlay h3 { font-size: 1.25rem; }
+  .card .overlay p { color: #d6d9df; font-size: 0.86rem; opacity: 0;
+    max-height: 0; transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease; }
+  .card:hover .overlay p { opacity: 1; max-height: 60px; margin-top: 0.3rem; }
+  .empty { text-align: center; color: var(--muted); padding: 3rem; grid-column: 1 / -1; }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 100; display: none;
+    background: rgba(8,9,12,0.94); align-items: center; justify-content: center;
+    padding: 2rem; flex-direction: column;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: min(1100px, 92vw); max-height: 76vh; border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+  .lb-caption { text-align: center; margin-top: 1.1rem; max-width: 60ch; }
+  .lb-caption h3 { font-size: 1.5rem; }
+  .lb-caption p { color: var(--muted); margin-top: 0.3rem; }
+  .lb-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.08); border: 1px solid var(--line); color: #fff;
+    width: 52px; height: 52px; border-radius: 50%; font-size: 1.6rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+  }
+  .lb-btn:hover { background: rgba(255,255,255,0.2); }
+  .lb-prev { left: 2.5vw; } .lb-next { right: 2.5vw; }
+  .lb-close { position: absolute; top: 1.4rem; right: 1.8rem; font-size: 2rem; color: #fff;
+    background: none; border: none; cursor: pointer; line-height: 1; }
+  .lb-count { position: absolute; top: 1.6rem; left: 1.8rem; color: var(--muted); font-size: 0.9rem; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 2.5rem 1.5rem;
+    text-align: center; color: var(--muted); font-size: 0.88rem; }
+  footer a { color: var(--accent); }
+  footer .logo { font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem; }
+
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) {
+    .nav ul { display: none; }
+    .grid { grid-template-columns: 1fr; }
+    .card .overlay p { opacity: 1; max-height: 60px; margin-top: 0.3rem; }
+    .lb-prev { left: 0.5rem; } .lb-next { right: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">Vista<span>.</span></div>
+    <ul>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#gallery">Regions</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">A Photo Journey</div>
+  <h1>The World's Most Beautiful Places</h1>
+  <p>A curated, photo-first gallery of the most scenic and photogenic corners of the planet — from alpine peaks to quiet canal towns.</p>
+  <a href="#gallery" class="btn">Explore the Gallery</a>
+  <div class="scroll-hint">⌄</div>
+</section>
+
+<div class="gallery-wrap" id="gallery">
+  <div class="section-head">
+    <h2>Featured Destinations</h2>
+    <p>Tap any photo to view it full-screen. Filter by the kind of place you love.</p>
+  </div>
+
+  <div class="filters" id="filters">
+    <button class="chip active" data-cat="all">All</button>
+    <button class="chip" data-cat="mountains">Mountains</button>
+    <button class="chip" data-cat="coast">Coast &amp; Lakes</button>
+    <button class="chip" data-cat="forest">Forests</button>
+    <button class="chip" data-cat="towns">Towns</button>
+    <button class="chip" data-cat="desert">Desert &amp; Plains</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<section id="about" style="max-width:760px;margin:0 auto;padding:1rem 1.5rem 4rem;text-align:center;">
+  <h2 style="font-size:1.8rem;margin-bottom:0.8rem;">About Vista</h2>
+  <p style="color:var(--muted);">Vista is a simple, photo-first showcase celebrating beautiful places around the world. Every destination is presented through a single striking frame — because sometimes one good photo says it all.</p>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous">&#8249;</button>
+  <img id="lbImg" alt="" />
+  <div class="lb-caption">
+    <h3 id="lbTitle"></h3>
+    <p id="lbDesc"></p>
+  </div>
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Next">&#8250;</button>
+</div>
+
+<footer>
+  <div class="logo">Vista<span style="color:var(--accent)">.</span></div>
+  <p>Beautiful places, one frame at a time.</p>
+  <p style="margin-top:0.8rem;opacity:0.8;">Photography via <a href="https://picsum.photos" target="_blank" rel="noopener">Lorem Picsum</a> · Demo gallery, no booking or affiliation.</p>
+</footer>
+
+<script>
+  // Each place: a real, fixed photo (Lorem Picsum id) + an honest description of what's in the frame.
+  const PLACES = [
+    { id: 29,  title: "Alpine Summit",      cat: "mountains", desc: "Snow-dusted peaks rising into a pale mountain sky." },
+    { id: 28,  title: "Emerald Highlands",  cat: "mountains", desc: "Lush green slopes rolling up toward open blue sky." },
+    { id: 15,  title: "Mountain Waterfall", cat: "mountains", desc: "A waterfall tumbling over mossy rock and scattered scree." },
+    { id: 128, title: "Reedside Lake",      cat: "coast",     desc: "Tall golden reeds framing a still lake and distant ridges." },
+    { id: 244, title: "Pelican Pier",       cat: "coast",     desc: "A weathered wooden jetty reaching into a bright blue sea." },
+    { id: 11,  title: "Misty River Valley", cat: "forest",    desc: "A winding river threading through a fog-draped green valley." },
+    { id: 190, title: "The Forest Path",    cat: "forest",    desc: "A quiet trail curving through a tunnel of tall, slender trees." },
+    { id: 49,  title: "Whitewashed Village",cat: "towns",     desc: "Cliffside white houses and a windmill above the sea." },
+    { id: 164, title: "Old Canal Quarter",  cat: "towns",     desc: "Colorful townhouses and moored boats along a historic canal." },
+    { id: 142, title: "The Grand Château",  cat: "towns",     desc: "A stately château standing at the end of a long, formal avenue." },
+    { id: 184, title: "Dunes at Dusk",      cat: "desert",    desc: "Warm last light sweeping across rolling desert dunes." },
+    { id: 110, title: "Golden Hour Fields", cat: "desert",    desc: "Lone trees silhouetted against a blazing countryside sunset." },
+  ];
+
+  const catLabel = { mountains:"Mountains", coast:"Coast & Lakes", forest:"Forests", towns:"Towns", desert:"Desert & Plains" };
+  const thumb = id => `https://picsum.photos/id/${id}/800/600`;
+  const full  = id => `https://picsum.photos/id/${id}/1600/1067`;
+
+  const grid = document.getElementById('grid');
+  let visible = PLACES.slice();
+
+  function render(list) {
+    visible = list;
+    grid.innerHTML = '';
+    if (!list.length) { grid.innerHTML = '<div class="empty">No places in this category yet.</div>'; return; }
+    list.forEach((p, i) => {
+      const card = document.createElement('figure');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${thumb(p.id)}" alt="${p.title} — ${p.desc}" loading="lazy" width="800" height="600" />
+        <figcaption class="overlay">
+          <span class="tag">${catLabel[p.cat]}</span>
+          <h3>${p.title}</h3>
+          <p>${p.desc}</p>
+        </figcaption>`;
+      card.addEventListener('click', () => openLightbox(i));
+      grid.appendChild(card);
+    });
+    revealOnScroll();
+  }
+
+  // Filters
+  document.getElementById('filters').addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const cat = chip.dataset.cat;
+    render(cat === 'all' ? PLACES.slice() : PLACES.filter(p => p.cat === cat));
+  });
+
+  // Reveal-on-scroll animation
+  let io;
+  function revealOnScroll() {
+    if (io) io.disconnect();
+    io = new IntersectionObserver(entries => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.card').forEach(c => io.observe(c));
+  }
+
+  // Lightbox
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbDesc = document.getElementById('lbDesc');
+  const lbCount = document.getElementById('lbCount');
+  let current = 0;
+
+  function showAt(i) {
+    current = (i + visible.length) % visible.length;
+    const p = visible[current];
+    lbImg.src = full(p.id);
+    lbImg.alt = `${p.title} — ${p.desc}`;
+    lbTitle.textContent = p.title;
+    lbDesc.textContent = p.desc;
+    lbCount.textContent = `${current + 1} / ${visible.length}`;
+  }
+  function openLightbox(i) { showAt(i); lb.classList.add('open'); lb.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden'; }
+  function closeLightbox() { lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbPrev').addEventListener('click', () => showAt(current - 1));
+  document.getElementById('lbNext').addEventListener('click', () => showAt(current + 1));
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showAt(current - 1);
+    if (e.key === 'ArrowRight') showAt(current + 1);
+  });
+
+  render(PLACES.slice());
+</script>
+
+</body>
+</html>
