@@ -33,14 +33,15 @@ const STORE = {
 
   // ---- WHISH PAYMENT (Whish to Whish) ----
   // The number buyers send money to in the Whish app:
-  whishNumber: "+961 00 000 000",
-  // Your name as it shows in Whish (so buyers know they have the right person):
-  whishName: "Your Name",
+  whishNumber: "+961 76 135 019",
+  // (Optional) Your name as it shows in Whish, so buyers know they have the right person.
+  // Leave "" to just use the store name above.
+  whishName: "",
 
   // ---- HOW BUYERS SEND YOU PROOF / REACH YOU ----
   // WhatsApp number, country code first, NUMBERS ONLY (no +, no spaces).
   // Example for Lebanon: "96171123456"
-  whatsappNumber: "96100000000",
+  whatsappNumber: "96176135019",
   // Backup contact email:
   email: "you@example.com",
 };

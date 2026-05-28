@@ -171,7 +171,7 @@
       `<div class="modal-body">
         <ol class="whish-steps">
           <li>Open the <b>Whish</b> app and choose <b>Whish&nbsp;to&nbsp;Whish</b> (send money).</li>
-          <li>Send <b>${money(v.price)}</b> to the number below (${esc(STORE.whishName)}).</li>
+          <li>Send <b>${money(v.price)}</b> to the number below (${esc(STORE.whishName || STORE.name)}).</li>
           <li>Come back and tap <b>“I’ve sent the payment”</b> to unlock your download.</li>
         </ol>
 
@@ -204,7 +204,7 @@
   function whishDone(v, ref) {
     markPurchased(v.id);
     // open a pre-filled WhatsApp message so the buyer can send proof to the seller
-    const msg = "Hi " + STORE.whishName + "! I paid " + money(v.price) +
+    const msg = "Hi " + (STORE.whishName || STORE.name) + "! I paid " + money(v.price) +
       " via Whish for \"" + v.title + "\" (ref " + ref + "). Here is my payment screenshot:";
     const waUrl = "https://wa.me/" + encodeURIComponent(STORE.whatsappNumber) + "?text=" + encodeURIComponent(msg);
     setTimeout(() => window.open(waUrl, "_blank", "noopener"), 400);
