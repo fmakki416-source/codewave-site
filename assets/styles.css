@@ -201,6 +201,10 @@ header {
   background: var(--whish); color: #fff; font-size: 0.78rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
 }
+.qr-wrap { text-align: center; margin: 0.25rem 0 0.9rem; }
+.qr-img { width: 180px; height: 180px; border-radius: 12px; background: #fff; padding: 8px; margin: 0 auto; box-shadow: var(--shadow); }
+.qr-cap { display: block; color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem; }
+
 .copy-row {
   display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
   background: var(--card); border: 1px dashed var(--line); border-radius: 10px;
