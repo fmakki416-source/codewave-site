@@ -3,302 +3,277 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FreshMart - Your Neighborhood Supermarket</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #222; line-height: 1.5; }
-  a { color: inherit; text-decoration: none; }
-  img { max-width: 100%; display: block; }
-
-  /* Header */
-  header { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #eee; z-index: 10; }
-  .nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
-  .logo { font-size: 1.5rem; font-weight: 800; color: #2d7a2d; }
-  .logo span { color: #f5a623; }
-  .nav ul { display: flex; gap: 2rem; list-style: none; }
-  .nav a:hover { color: #2d7a2d; }
-  .search { display: flex; align-items: center; background: #f4f4f4; border-radius: 24px; padding: 0.4rem 1rem; gap: 0.5rem; }
-  .search input { border: none; background: transparent; outline: none; width: 200px; }
-
-  /* Hero */
-  .hero { background: linear-gradient(135deg, #e8f5e9 0%, #fff3e0 100%); padding: 4rem 2rem; text-align: center; }
-  .hero h1 { font-size: 2.75rem; margin-bottom: 1rem; color: #1b4d1b; }
-  .hero p { font-size: 1.2rem; color: #555; margin-bottom: 2rem; }
-  .btn { display: inline-block; background: #2d7a2d; color: #fff; padding: 0.8rem 2rem; border-radius: 24px; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s; }
-  .btn:hover { background: #226322; }
-  .btn-outline { background: #fff; color: #2d7a2d; border: 2px solid #2d7a2d; margin-left: 0.5rem; }
-  .btn-outline:hover { background: #2d7a2d; color: #fff; }
-
-  /* Sections */
-  section { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
-  section h2 { font-size: 2rem; margin-bottom: 2rem; text-align: center; color: #1b4d1b; }
-
-  /* Categories */
-  .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; }
-  .category { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 2rem 1rem; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-  .category:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-  .category .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .category h3 { font-size: 1rem; color: #333; }
-
-  /* Products */
-  .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
-  .product { background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; transition: box-shadow 0.2s; }
-  .product:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-  .product .img-wrap { background: #fafafa; font-size: 4rem; text-align: center; padding: 2rem; }
-  .product .info { padding: 1rem; }
-  .product h3 { font-size: 1rem; margin-bottom: 0.25rem; }
-  .product .unit { color: #888; font-size: 0.85rem; margin-bottom: 0.5rem; }
-  .product .price-row { display: flex; align-items: center; justify-content: space-between; }
-  .product .price { font-weight: 700; color: #2d7a2d; font-size: 1.1rem; }
-  .product .old-price { text-decoration: line-through; color: #aaa; font-size: 0.85rem; margin-right: 0.5rem; }
-  .product .add { background: #2d7a2d; color: #fff; border: none; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
-  .product .add:hover { background: #226322; }
-  .badge { position: absolute; background: #f5a623; color: #fff; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; margin: 0.5rem; font-weight: 600; }
-  .product { position: relative; }
-
-  /* Deals banner */
-  .deals { background: #2d7a2d; color: #fff; border-radius: 16px; padding: 3rem; text-align: center; margin: 2rem auto; max-width: 1200px; }
-  .deals h2 { color: #fff; }
-  .deals p { margin-bottom: 1.5rem; opacity: 0.9; }
-
-  /* Features */
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; text-align: center; }
-  .feature .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .feature h3 { margin-bottom: 0.5rem; }
-  .feature p { color: #666; font-size: 0.95rem; }
-
-  /* Footer */
-  footer { background: #1b4d1b; color: #ddd; padding: 3rem 2rem 1rem; }
-  .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
-  .footer-grid h4 { color: #fff; margin-bottom: 1rem; }
-  .footer-grid ul { list-style: none; }
-  .footer-grid li { margin-bottom: 0.5rem; font-size: 0.9rem; }
-  .footer-grid a:hover { color: #f5a623; }
-  .copyright { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #2d5a2d; font-size: 0.85rem; opacity: 0.7; }
-
-  @media (max-width: 700px) {
-    .nav ul { display: none; }
-    .hero h1 { font-size: 2rem; }
-  }
-</style>
+<meta name="theme-color" content="#008069" />
+<meta name="description" content="Marhaba — simple, secure, reliable messaging built for the UAE. Sign up with your phone number or email." />
+<title>Marhaba — Messaging for the UAE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="assets/css/style.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2300a884'/%3E%3Cpath d='M16 7a9 9 0 00-7.8 13.5L7 25l4.6-1.2A9 9 0 1016 7z' fill='white'/%3E%3C/svg%3E" />
 </head>
 <body>
 
-<header>
-  <div class="nav">
-    <div class="logo">Fresh<span>Mart</span></div>
-    <ul>
-      <li><a href="#categories">Shop</a></li>
-      <li><a href="#deals">Deals</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <div class="search">
-      <span>🔍</span>
-      <input type="text" placeholder="Search groceries..." />
+<!-- ============================== LANDING ============================== -->
+<div id="landing" class="screen">
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#top">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="34" height="34"><rect width="32" height="32" rx="9" fill="#00a884"/><path d="M16 7a9 9 0 00-7.8 13.5L7 25l4.6-1.2A9 9 0 1016 7z" fill="#fff"/></svg>
+        </span>
+        <span class="brand-name">Marhaba <small>مرحبا</small></span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#security">Security</a>
+        <a href="#uae">For the UAE</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="btn btn-ghost" data-auth="login">Log in</button>
+        <button class="btn btn-primary" data-auth="signup">Sign up free</button>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<div class="hero">
-  <h1>Fresh Groceries, Delivered Daily</h1>
-  <p>Locally sourced produce, pantry staples, and everyday essentials — all in one place.</p>
-  <a href="#categories" class="btn">Shop Now</a>
-  <a href="#deals" class="btn btn-outline">View Deals</a>
+  <main id="top">
+    <section class="hero container">
+      <div class="hero-copy">
+        <span class="pill">🇦🇪 Made for the Emirates</span>
+        <h1>Simple. Secure.<br/>Reliable messaging.</h1>
+        <p>Marhaba keeps you connected across the UAE — from Abu Dhabi to Ras Al Khaimah. Free, private, and lightning fast. Sign up with your <strong>phone number</strong> or <strong>email</strong>.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary btn-lg" data-auth="signup">Get started — it's free</button>
+          <button class="btn btn-outline btn-lg" data-auth="login">Open Marhaba Web</button>
+        </div>
+        <p class="hero-note">No subscriptions. No ads. Works on every device.</p>
+      </div>
+
+      <div class="hero-art" aria-hidden="true">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-topbar">
+              <span class="back">‹</span>
+              <span class="pa">FA</span>
+              <div class="pinfo"><strong>Fatima Al Zaabi</strong><small>online</small></div>
+            </div>
+            <div class="phone-chat">
+              <div class="pb in">Marhaba! 👋 You coming to Dubai Mall later?</div>
+              <div class="pb out">Yalla, inshallah around 6 🛍️ <span class="tick">✓✓</span></div>
+              <div class="pb in">Perfect, see you at the fountain 💚</div>
+              <div class="pb out">On my way habibi 🚗 <span class="tick">✓✓</span></div>
+            </div>
+            <div class="phone-input"><span>Type a message</span><span class="psend">➤</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="features container">
+      <h2>Everything you need to stay in touch</h2>
+      <div class="grid">
+        <div class="card"><div class="ic">💬</div><h3>Instant messaging</h3><p>Send texts, photos, voice notes and documents that arrive in real time.</p></div>
+        <div class="card"><div class="ic">📞</div><h3>Voice &amp; video calls</h3><p>Crystal-clear calls to anyone in the Emirates and around the world.</p></div>
+        <div class="card"><div class="ic">👥</div><h3>Groups</h3><p>Bring family, friends and your work team together in one place.</p></div>
+        <div class="card"><div class="ic">🔒</div><h3>End-to-end encrypted</h3><p>Your conversations are private. Not even we can read them.</p></div>
+        <div class="card"><div class="ic">🌐</div><h3>Arabic &amp; English</h3><p>Chat in the language you love — Marhaba speaks both.</p></div>
+        <div class="card"><div class="ic">⚡</div><h3>Fast &amp; light</h3><p>Built to run smoothly even on slower connections.</p></div>
+      </div>
+    </section>
+
+    <section id="security" class="band">
+      <div class="container band-inner">
+        <div>
+          <h2>Privacy that travels with you</h2>
+          <p>Every message, call and photo on Marhaba is protected with end-to-end encryption by default. Your data stays yours — we don't sell it, and we don't show you ads.</p>
+          <ul class="checks">
+            <li>End-to-end encryption on by default</li>
+            <li>Disappearing messages &amp; two-step verification</li>
+            <li>No ads, ever</li>
+          </ul>
+        </div>
+        <div class="lock-art" aria-hidden="true">🔐</div>
+      </div>
+    </section>
+
+    <section id="uae" class="features container">
+      <h2>Built for life in the UAE</h2>
+      <div class="grid three">
+        <div class="card"><div class="ic">📱</div><h3>+971 ready</h3><p>Sign up in seconds with your Emirates mobile number.</p></div>
+        <div class="card"><div class="ic">🕌</div><h3>Local at heart</h3><p>Designed with the community, culture and pace of the Emirates in mind.</p></div>
+        <div class="card"><div class="ic">🌙</div><h3>Always on</h3><p>Reliable from the dunes to the Marina, day and night.</p></div>
+      </div>
+      <div class="cta-band">
+        <h2>Ready to say Marhaba?</h2>
+        <p>Join and start chatting in under a minute.</p>
+        <button class="btn btn-primary btn-lg" data-auth="signup">Create your free account</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="brand small"><span class="brand-logo"><svg viewBox="0 0 32 32" width="26" height="26"><rect width="32" height="32" rx="9" fill="#00a884"/><path d="M16 7a9 9 0 00-7.8 13.5L7 25l4.6-1.2A9 9 0 1016 7z" fill="#fff"/></svg></span><span class="brand-name">Marhaba</span></div>
+        <p class="muted">Messaging for the Emirates.</p>
+      </div>
+      <div><h4>Product</h4><ul><li><a href="#features">Features</a></li><li><a href="#security">Security</a></li><li><a href="#uae">For the UAE</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li></ul></div>
+      <div><h4>Get in touch</h4><ul><li>📍 Dubai, United Arab Emirates</li><li>✉️ hello@marhaba.ae</li></ul></div>
+    </div>
+    <div class="container copyright">© 2026 Marhaba. A front-end demo. Made with 💚 in the UAE.</div>
+  </footer>
 </div>
 
-<section id="categories">
-  <h2>Shop by Category</h2>
-  <div class="categories">
-    <div class="category"><div class="icon">🥬</div><h3>Fresh Produce</h3></div>
-    <div class="category"><div class="icon">🥛</div><h3>Dairy & Eggs</h3></div>
-    <div class="category"><div class="icon">🍞</div><h3>Bakery</h3></div>
-    <div class="category"><div class="icon">🥩</div><h3>Meat & Seafood</h3></div>
-    <div class="category"><div class="icon">🧃</div><h3>Beverages</h3></div>
-    <div class="category"><div class="icon">🍿</div><h3>Snacks</h3></div>
-    <div class="category"><div class="icon">🧻</div><h3>Household</h3></div>
-    <div class="category"><div class="icon">❄️</div><h3>Frozen</h3></div>
-  </div>
-</section>
+<!-- ============================== AUTH ============================== -->
+<div id="auth" class="screen hidden">
+  <div class="auth-bg"></div>
+  <div class="auth-card">
+    <button class="auth-close" id="authClose" aria-label="Back to home">✕</button>
+    <div class="auth-brand">
+      <span class="brand-logo"><svg viewBox="0 0 32 32" width="40" height="40"><rect width="32" height="32" rx="9" fill="#00a884"/><path d="M16 7a9 9 0 00-7.8 13.5L7 25l4.6-1.2A9 9 0 1016 7z" fill="#fff"/></svg></span>
+      <h2 id="authTitle">Create your account</h2>
+      <p id="authSubtitle" class="muted">Chat with anyone in the UAE — sign up in seconds.</p>
+    </div>
 
-<section id="featured">
-  <h2>Featured Products</h2>
-  <div class="products">
-    <div class="product">
-      <span class="badge">-20%</span>
-      <div class="img-wrap">🍎</div>
-      <div class="info">
-        <h3>Organic Apples</h3>
-        <div class="unit">1 kg bag</div>
-        <div class="price-row">
-          <div><span class="old-price">$4.99</span><span class="price">$3.99</span></div>
-          <button class="add">Add +</button>
-        </div>
-      </div>
+    <!-- Method tabs -->
+    <div class="tabs" id="methodTabs">
+      <button class="tab active" data-method="phone">📱 Phone number</button>
+      <button class="tab" data-method="email">✉️ Email</button>
     </div>
-    <div class="product">
-      <div class="img-wrap">🥑</div>
-      <div class="info">
-        <h3>Avocados</h3>
-        <div class="unit">Pack of 4</div>
-        <div class="price-row">
-          <span class="price">$5.49</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <span class="badge">NEW</span>
-      <div class="img-wrap">🥛</div>
-      <div class="info">
-        <h3>Whole Milk</h3>
-        <div class="unit">1 gallon</div>
-        <div class="price-row">
-          <span class="price">$3.29</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <div class="img-wrap">🍞</div>
-      <div class="info">
-        <h3>Sourdough Bread</h3>
-        <div class="unit">Fresh, 500g</div>
-        <div class="price-row">
-          <span class="price">$4.79</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <span class="badge">-15%</span>
-      <div class="img-wrap">🥚</div>
-      <div class="info">
-        <h3>Free-Range Eggs</h3>
-        <div class="unit">Dozen</div>
-        <div class="price-row">
-          <div><span class="old-price">$6.49</span><span class="price">$5.49</span></div>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <div class="img-wrap">🍌</div>
-      <div class="info">
-        <h3>Bananas</h3>
-        <div class="unit">Per lb</div>
-        <div class="price-row">
-          <span class="price">$0.69</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <div class="img-wrap">🧀</div>
-      <div class="info">
-        <h3>Cheddar Cheese</h3>
-        <div class="unit">Block, 250g</div>
-        <div class="price-row">
-          <span class="price">$6.99</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <span class="badge">HOT</span>
-      <div class="img-wrap">🍅</div>
-      <div class="info">
-        <h3>Vine Tomatoes</h3>
-        <div class="unit">500g</div>
-        <div class="price-row">
-          <span class="price">$2.99</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<div id="deals" class="deals">
-  <h2>Weekend Flash Sale</h2>
-  <p>Save up to 30% on hundreds of items — this weekend only.</p>
-  <a href="#featured" class="btn" style="background:#f5a623">Grab the Deals</a>
+    <!-- PHONE FORM -->
+    <form id="phoneForm" class="auth-form">
+      <label class="field full" id="nameFieldPhone">
+        <span>Your name</span>
+        <input type="text" id="phoneName" placeholder="e.g. Ahmed Al Mansoori" autocomplete="name" />
+      </label>
+      <label class="field">
+        <span>Phone number</span>
+        <div class="phone-input-row">
+          <select id="countryCode" aria-label="Country code">
+            <option value="+971" data-flag="🇦🇪" selected>🇦🇪 +971</option>
+            <option value="+966" data-flag="🇸🇦">🇸🇦 +966</option>
+            <option value="+965" data-flag="🇰🇼">🇰🇼 +965</option>
+            <option value="+974" data-flag="🇶🇦">🇶🇦 +974</option>
+            <option value="+973" data-flag="🇧🇭">🇧🇭 +973</option>
+            <option value="+968" data-flag="🇴🇲">🇴🇲 +968</option>
+            <option value="+20" data-flag="🇪🇬">🇪🇬 +20</option>
+            <option value="+91" data-flag="🇮🇳">🇮🇳 +91</option>
+            <option value="+44" data-flag="🇬🇧">🇬🇧 +44</option>
+            <option value="+1" data-flag="🇺🇸">🇺🇸 +1</option>
+          </select>
+          <input type="tel" id="phoneNumber" placeholder="50 123 4567" autocomplete="tel-national" inputmode="numeric" />
+        </div>
+        <small class="hint" id="phoneHint">UAE mobile numbers look like 50 123 4567.</small>
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Send verification code</button>
+    </form>
+
+    <!-- OTP FORM -->
+    <form id="otpForm" class="auth-form hidden">
+      <p class="otp-target muted">We sent a 6-digit code to <strong id="otpTarget"></strong></p>
+      <div class="otp-inputs" id="otpInputs">
+        <input maxlength="1" inputmode="numeric" class="otp-box" />
+        <input maxlength="1" inputmode="numeric" class="otp-box" />
+        <input maxlength="1" inputmode="numeric" class="otp-box" />
+        <input maxlength="1" inputmode="numeric" class="otp-box" />
+        <input maxlength="1" inputmode="numeric" class="otp-box" />
+        <input maxlength="1" inputmode="numeric" class="otp-box" />
+      </div>
+      <div class="demo-note" id="otpDemoNote"></div>
+      <button type="submit" class="btn btn-primary btn-block">Verify &amp; continue</button>
+      <button type="button" class="btn btn-link" id="otpBack">‹ Change number</button>
+    </form>
+
+    <!-- EMAIL FORM -->
+    <form id="emailForm" class="auth-form hidden">
+      <label class="field full" id="nameFieldEmail">
+        <span>Your name</span>
+        <input type="text" id="emailName" placeholder="e.g. Fatima Al Zaabi" autocomplete="name" />
+      </label>
+      <label class="field full">
+        <span>Email address</span>
+        <input type="email" id="emailAddr" placeholder="you@example.com" autocomplete="email" />
+      </label>
+      <label class="field full">
+        <span>Password</span>
+        <input type="password" id="emailPass" placeholder="At least 6 characters" autocomplete="current-password" />
+      </label>
+      <button type="submit" class="btn btn-primary btn-block" id="emailSubmit">Create account</button>
+    </form>
+
+    <div class="auth-error" id="authError" role="alert"></div>
+
+    <p class="auth-switch muted">
+      <span id="switchPrompt">Already have an account?</span>
+      <button type="button" class="btn btn-link" id="switchMode">Log in</button>
+    </p>
+    <p class="tos muted">By continuing you agree to Marhaba's Terms &amp; Privacy Policy. This is a front-end demo — no real SMS is sent and data stays in your browser.</p>
+  </div>
 </div>
 
-<section id="about">
-  <h2>Why Choose FreshMart</h2>
-  <div class="features">
-    <div class="feature">
-      <div class="icon">🚚</div>
-      <h3>Free Delivery</h3>
-      <p>Free same-day delivery on orders over $40.</p>
-    </div>
-    <div class="feature">
-      <div class="icon">🌱</div>
-      <h3>Locally Sourced</h3>
-      <p>Partnering with 50+ local farms and producers.</p>
-    </div>
-    <div class="feature">
-      <div class="icon">💰</div>
-      <h3>Best Prices</h3>
-      <p>Weekly deals and a price-match guarantee.</p>
-    </div>
-    <div class="feature">
-      <div class="icon">🕒</div>
-      <h3>Open 7 Days</h3>
-      <p>7am - 10pm, every day of the week.</p>
-    </div>
+<!-- ============================== CHAT APP ============================== -->
+<div id="app" class="screen hidden">
+  <div class="wa">
+    <!-- Sidebar -->
+    <aside class="wa-side" id="waSide">
+      <div class="side-head">
+        <div class="me">
+          <span class="avatar" id="meAvatar">U</span>
+          <div class="me-info"><strong id="meName">You</strong><small id="meId"></small></div>
+        </div>
+        <div class="side-actions">
+          <button class="icon-btn" id="newChatBtn" title="New chat">✏️</button>
+          <button class="icon-btn" id="menuBtn" title="Menu">⋮</button>
+          <div class="menu hidden" id="sideMenu">
+            <button id="profileBtn">My profile</button>
+            <button id="logoutBtn">Log out</button>
+          </div>
+        </div>
+      </div>
+      <div class="side-search">
+        <input type="text" id="searchInput" placeholder="Search or start a new chat" />
+      </div>
+      <div class="chat-list" id="chatList"></div>
+    </aside>
+
+    <!-- Conversation -->
+    <main class="wa-main" id="waMain">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-logo"><svg viewBox="0 0 32 32" width="80" height="80"><rect width="32" height="32" rx="9" fill="#e9edef"/><path d="M16 7a9 9 0 00-7.8 13.5L7 25l4.6-1.2A9 9 0 1016 7z" fill="#cfd6da"/></svg></div>
+        <h2>Marhaba Web</h2>
+        <p class="muted">Select a chat to start messaging. Your conversations are end-to-end encrypted.</p>
+        <p class="muted small">🔒 Demo mode — messages are simulated and stored only in your browser.</p>
+      </div>
+
+      <div class="conversation hidden" id="conversation">
+        <div class="conv-head">
+          <button class="icon-btn back-btn" id="backBtn">‹</button>
+          <span class="avatar" id="convAvatar"></span>
+          <div class="conv-info"><strong id="convName"></strong><small id="convStatus"></small></div>
+          <div class="conv-actions">
+            <button class="icon-btn" title="Video call">📹</button>
+            <button class="icon-btn" title="Voice call">📞</button>
+            <button class="icon-btn" title="Search">🔍</button>
+          </div>
+        </div>
+        <div class="messages" id="messages"></div>
+        <form class="composer" id="composer">
+          <button type="button" class="icon-btn" title="Emoji" id="emojiBtn">😊</button>
+          <button type="button" class="icon-btn" title="Attach">📎</button>
+          <input type="text" id="msgInput" placeholder="Type a message" autocomplete="off" />
+          <button type="submit" class="icon-btn send" id="sendBtn" title="Send">➤</button>
+        </form>
+      </div>
+    </main>
   </div>
-</section>
+</div>
 
-<footer id="contact">
-  <div class="footer-grid">
-    <div>
-      <h4>FreshMart</h4>
-      <p style="font-size:0.9rem;opacity:0.85;">Your neighborhood supermarket for fresh, affordable groceries.</p>
-    </div>
-    <div>
-      <h4>Shop</h4>
-      <ul>
-        <li><a href="#categories">Categories</a></li>
-        <li><a href="#featured">Featured</a></li>
-        <li><a href="#deals">Deals</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4>Company</h4>
-      <ul>
-        <li><a href="#about">About Us</a></li>
-        <li><a href="#">Careers</a></li>
-        <li><a href="#">Store Locator</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4>Contact</h4>
-      <ul>
-        <li>📍 123 Market St, Springfield</li>
-        <li>📞 (555) 123-4567</li>
-        <li>✉️ hello@freshmart.com</li>
-      </ul>
-    </div>
-  </div>
-  <div class="copyright">© 2026 FreshMart. All rights reserved.</div>
-</footer>
+<div id="toast" class="toast hidden"></div>
 
-<script>
-  // Simple "add to cart" feedback
-  document.querySelectorAll('.add').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const original = btn.textContent;
-      btn.textContent = '✓ Added';
-      btn.style.background = '#f5a623';
-      setTimeout(() => {
-        btn.textContent = original;
-        btn.style.background = '';
-      }, 1200);
-    });
-  });
-</script>
-
+<script src="assets/js/store.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/chat.js"></script>
+<script src="assets/js/main.js"></script>
 </body>
 </html>
