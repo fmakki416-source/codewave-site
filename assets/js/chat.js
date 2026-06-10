@@ -10,11 +10,13 @@ window.Chat = (function () {
   var chats = [];
   var activeId = null;
   var onLogout = function () {};
-  var replyTimer = null;
+  var pending = {};     // chatId -> auto-reply timeout id (one chain per chat)
+  var readTimers = [];  // pending read-receipt timeouts
 
   function $(id) { return document.getElementById(id); }
 
   function open(currentUser, opts) {
+    clearTimers();            // drop any timers left over from a previous session
     user = currentUser;
     onLogout = (opts && opts.onLogout) || onLogout;
     chats = Store.getChats(user.id);
@@ -23,8 +25,21 @@ window.Chat = (function () {
     renderList();
     showEmpty();
     wireOnce();
-    // On desktop, open the first chat for a lively first impression.
-    if (window.innerWidth > 768 && chats.length) openChat(chats[0].id);
+    // On desktop, open the most recent conversation for a lively first impression.
+    if (window.innerWidth > 768 && chats.length) openChat(topChatId());
+  }
+
+  // id of the chat shown at the top of the time-sorted list
+  function topChatId() {
+    return chats.slice().sort(function (a, b) { return lastT(b) - lastT(a); })[0].id;
+  }
+
+  // cancel every outstanding auto-reply / read-receipt timer
+  function clearTimers() {
+    Object.keys(pending).forEach(function (k) { clearTimeout(pending[k]); });
+    pending = {};
+    readTimers.forEach(clearTimeout);
+    readTimers = [];
   }
 
   // ---- header / me ----
@@ -63,7 +78,7 @@ window.Chat = (function () {
       toast(user.name + ' · ' + (user.phone || user.email));
     });
     $('logoutBtn').addEventListener('click', function () {
-      if (replyTimer) clearTimeout(replyTimer);
+      clearTimers();
       onLogout();
     });
   }
@@ -87,7 +102,7 @@ window.Chat = (function () {
       item.className = 'chat-item' + (c.id === activeId ? ' active' : '');
       item.innerHTML =
         '<span class="avatar" style="background:' + Store.colorFor(c.id) + '">' +
-          (c.kind === 'group' ? '👥' : Store.initials(c.name)) + '</span>' +
+          (c.kind === 'group' ? '👥' : esc(Store.initials(c.name))) + '</span>' +
         '<div class="ci-body">' +
           '<div class="ci-top">' +
             '<span class="ci-name">' + esc(c.name) + '</span>' +
@@ -134,7 +149,6 @@ window.Chat = (function () {
 
     $('emptyState').classList.add('hidden');
     $('conversation').classList.remove('hidden');
-    $('waMain').style.display = 'flex';
     document.querySelector('.wa').classList.add('show-conv');
 
     var av = $('convAvatar');
@@ -206,23 +220,27 @@ window.Chat = (function () {
     renderList($('searchInput').value);
 
     // mark delivered->read shortly after
-    setTimeout(function () {
+    var readT = setTimeout(function () {
+      readTimers = readTimers.filter(function (x) { return x !== readT; });
       var last = c.messages[c.messages.length - 1];
       if (last && last.from === 'me') { last.read = true; persist(); if (activeId === c.id) renderMessages(c); }
     }, 1500);
+    readTimers.push(readT);
 
     scheduleReply(c);
   }
 
   function scheduleReply(c) {
-    if (replyTimer) clearTimeout(replyTimer);
     var replyChatId = c.id;
+    // one in-flight reply chain per chat, so sending elsewhere never cancels it
+    if (pending[replyChatId]) clearTimeout(pending[replyChatId]);
     var delay = 1200 + Math.random() * 1600;
 
-    replyTimer = setTimeout(function () {
+    pending[replyChatId] = setTimeout(function () {
       if (activeId === replyChatId) showTyping();
-      replyTimer = setTimeout(function () {
-        removeTyping();
+      pending[replyChatId] = setTimeout(function () {
+        delete pending[replyChatId];
+        if (activeId === replyChatId) removeTyping();
         var chat = findChat(replyChatId);
         if (!chat) return;
         var pool = chat.replies && chat.replies.length ? chat.replies : ['👍', 'Okay!', 'Got it 🙏'];
@@ -231,7 +249,7 @@ window.Chat = (function () {
         if (chat.kind === 'group') msg.sender = groupSender(chat);
         chat.messages.push(msg);
         persist();
-        if (activeId === replyChatId) { renderMessages(chat); }
+        if (activeId === replyChatId) renderMessages(chat);
         renderList($('searchInput').value);
         if (activeId !== replyChatId) toast('💬 New message from ' + chat.name);
       }, 1400);
@@ -239,7 +257,8 @@ window.Chat = (function () {
   }
 
   function groupSender(chat) {
-    var names = ['Sara', 'Khalid', 'Mama', 'Omar', 'Layla'];
+    var names = (chat.senders && chat.senders.length)
+      ? chat.senders : ['Sara', 'Khalid', 'Omar', 'Layla'];
     return names[Math.floor(Math.random() * names.length)];
   }
 

@@ -109,9 +109,10 @@ window.Auth = (function () {
     if (mode === 'signup' && !name) return setError('Please enter your name.');
     if (!raw) return setError('Please enter your phone number.');
 
-    // UAE-specific validation: mobile = 9 digits starting with 5 (or 05x with leading 0)
+    // UAE-specific validation: mobile = 9 digits starting with 5.
+    // Accept local (50…), 0-prefixed (050…) and full international (00971…/971…) forms.
     if (cc === '+971') {
-      if (raw[0] === '0') raw = raw.slice(1);
+      raw = raw.replace(/^(00)?971/, '').replace(/^0/, '');
       if (!/^5\d{8}$/.test(raw)) {
         return setError('Enter a valid UAE mobile, e.g. 50 123 4567.');
       }

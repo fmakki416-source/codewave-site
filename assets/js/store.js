@@ -76,7 +76,7 @@ window.Store = (function () {
         id: 'c1', name: 'Fatima Al Zaabi', kind: 'contact', status: 'online',
         replies: ['Marhaba! 👋', 'Yalla, see you there 💚', 'Inshallah 🙏', 'Shukran habibi 😄'],
         messages: [
-          { from: 'them', text: 'Marhaba! 👋 You coming to Dubai Mall later?', t: mins(48) },
+          { from: 'them', text: 'Marhaba! 👋 You coming to Dubai Mall later?', t: mins(48), seen: true },
           { from: 'me', text: 'Yalla, inshallah around 6 🛍️', t: mins(45), read: true },
           { from: 'them', text: 'Perfect, see you at the fountain 💚', t: mins(12) }
         ]
@@ -85,22 +85,24 @@ window.Store = (function () {
         id: 'c2', name: 'Ahmed Al Mansoori', kind: 'contact', status: 'last seen today at 13:20',
         replies: ['Wallah good idea', 'Haha 😂', 'On my way 🚗', 'Let me check'],
         messages: [
-          { from: 'them', text: 'Akhi, did you finish the report?', t: mins(180) },
+          { from: 'them', text: 'Akhi, did you finish the report?', t: mins(180), seen: true },
           { from: 'me', text: 'Almost, sending it tonight inshallah', t: mins(170), read: true },
           { from: 'them', text: 'Shukran 🙏', t: mins(165) }
         ]
       },
       {
         id: 'g1', name: 'Family — العائلة', kind: 'group', status: 'Mama, Baba, Sara, +4',
+        senders: ['Mama', 'Baba', 'Sara', 'Yousef'],
         replies: ['❤️❤️', 'See you Friday for lunch', 'Mashallah!', 'Drive safe everyone'],
         messages: [
-          { from: 'them', sender: 'Mama', text: 'Don\'t forget Friday lunch at 1pm 🍽️', t: days(1) },
+          { from: 'them', sender: 'Mama', text: 'Don\'t forget Friday lunch at 1pm 🍽️', t: days(1), seen: true },
           { from: 'me', text: 'Will be there! 😋', t: days(1) + 120000, read: true },
           { from: 'them', sender: 'Sara', text: 'Bringing dessert 🍰', t: mins(300) }
         ]
       },
       {
         id: 'g2', name: 'Dubai Marina B12 🏢', kind: 'group', status: 'Building residents',
+        senders: ['Building Mgmt', 'Khalid', 'Reem'],
         replies: ['Noted, thanks', 'The lift is fixed now ✅', 'Pool reopens tomorrow'],
         messages: [
           { from: 'them', sender: 'Building Mgmt', text: 'Water maintenance tomorrow 9–11am.', t: days(2) },
