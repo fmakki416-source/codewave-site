@@ -6,11 +6,12 @@ with a **UAE phone number (+971) and a verification code**, then chat in a
 familiar messenger interface — light/dark mode, English/العربية, groups, emoji,
 typing indicators and read receipts.
 
-> ⚠️ **This is a front-end demo.** There is no server yet: accounts, the
-> verification code and all messages are stored in your browser's
-> `localStorage`. It’s a fully working prototype you can click through — see
-> [**Connecting a real backend**](#connecting-a-real-backend) to make sign-up,
-> SMS codes and messages work for real users.
+> ⚙️ **Two modes, one codebase.** Out of the box Sawa runs in **local demo
+> mode** — accounts, the verification code and messages are stored in your
+> browser's `localStorage`, so you can click through everything with no setup.
+> A **Firebase backend is already wired in**: add your keys and flip one flag to
+> get *real* email + phone-SMS sign-up and messages saved in the cloud. See
+> [**Connecting a real backend**](#connecting-a-real-backend).
 
 ---
 
@@ -52,6 +53,7 @@ This is a static site, so you can host it for free:
 ```
 index.html            Landing page + sign-up / log-in modal
 chat.html             The messenger app
+firestore.rules       Firestore security rules (for the Firebase backend)
 assets/
   css/
     base.css          Theme variables, buttons, form controls, toasts
@@ -59,8 +61,10 @@ assets/
     chat.css          Chat application layout
   js/
     i18n.js           Tiny EN / AR translation helper (RTL aware)
-    store.js          localStorage data layer (users, sessions, chats, UAE phone helpers)
-    auth.js           Sign-up / log-in logic + simulated phone OTP
+    store.js          localStorage data layer (users, chats, UAE phone helpers)
+    firebase-config.js  Your Firebase keys + the on/off switch
+    backend.js        Adapter: routes auth + data to Firebase OR local demo
+    auth.js           Sign-up / log-in UI logic (email + phone code)
     chat.js           Chat UI logic (list, conversation, replies, settings)
 ```
 
@@ -77,49 +81,44 @@ So you can click through the whole flow without a server:
 
 ## Connecting a real backend
 
-The app talks to a small data layer in [`assets/js/store.js`](assets/js/store.js)
-(`window.SawaStore`) and the auth flow in [`assets/js/auth.js`](assets/js/auth.js).
-To go live, swap that local layer for a real backend. Three good options:
+Sawa already ships with a **Firebase backend built in** (see
+[`assets/js/backend.js`](assets/js/backend.js)). The app routes every account
+and data action through `window.SawaBackend`, which automatically uses Firebase
+when it's configured and the local demo otherwise — so you don't have to rewrite
+any UI code.
 
-### Option A — Firebase (recommended for email **and** phone sign-up)
+### ✅ Option A — Firebase (recommended, already integrated)
 
-Firebase is the easiest path because **Phone (SMS OTP)** and **Email/Password**
-auth are built in, it works from a static site (no server to run), and
-**Cloud Firestore** gives you real-time message sync. Free tier is generous;
-note SMS for phone auth requires the pay-as-you-go (Blaze) plan and is billed
-per message.
+Firebase is the easiest path: **Phone (SMS code)** and **Email/Password** auth
+are built in, it runs from a static site (no server), and **Cloud Firestore**
+stores messages. The free *Spark* plan covers email auth; **phone/SMS auth
+requires the pay-as-you-go *Blaze* plan** and is billed a small amount per SMS.
 
-1. Create a project at <https://console.firebase.google.com>.
-2. **Build → Authentication → Sign-in method**: enable **Email/Password** and **Phone**.
-3. **Build → Firestore Database**: create a database.
-4. **Project settings → Your apps → Web**: copy the config snippet.
-5. Add the SDK and config to the pages, then replace the `SawaStore`/`auth.js`
-   calls. Phone sign-up maps directly to Firebase:
+**Turn it on — 5 steps, ~10 minutes:**
 
-   ```html
-   <script type="module">
-     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-     import {
-       getAuth, RecaptchaVerifier, signInWithPhoneNumber,
-       createUserWithEmailAndPassword, signInWithEmailAndPassword
-     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+1. **Create a project** at <https://console.firebase.google.com>.
+2. **Authentication → Sign-in method:** enable **Email/Password** *and* **Phone**.
+   (For Phone, upgrade the project to the **Blaze** plan when prompted.)
+3. **Firestore Database → Create database** (Production mode). Open the **Rules**
+   tab and paste the contents of [`firestore.rules`](firestore.rules), then **Publish**.
+4. **Project settings ⚙️ → Your apps → Web (`</>`)**: register an app and copy the
+   `firebaseConfig` values.
+5. Open [`assets/js/firebase-config.js`](assets/js/firebase-config.js), paste your
+   values, and set **`enabled: true`**.
 
-     const app  = initializeApp({ /* paste your config here */ });
-     const auth = getAuth(app);
+That's it — sign-up now creates real Firebase accounts (real SMS codes for phone
+sign-up) and conversations are saved per-user in Firestore. If `enabled` is
+`false` or the keys are still placeholders, Sawa transparently falls back to the
+local demo.
 
-     // Phone: send a real SMS code, then confirm it
-     const verifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "invisible" });
-     const confirmation = await signInWithPhoneNumber(auth, "+971501234567", verifier);
-     await confirmation.confirm(codeTheUserTyped);   // ← replaces the demo OTP
+> **Add your domain:** for SMS to work on your live site, add your domain under
+> **Authentication → Settings → Authorized domains** (`localhost` is allowed by
+> default for testing).
 
-     // Email
-     await createUserWithEmailAndPassword(auth, email, password);
-     await signInWithEmailAndPassword(auth, email, password);
-   </script>
-   ```
-
-   Store and stream messages from Firestore (a `chats/{id}/messages` collection)
-   instead of `localStorage`.
+> **Heads-up on cost & limits:** phone auth needs the Blaze plan and a payment
+> method; SMS is charged per message and is rate-limited per number/day. For
+> local testing you can add **test phone numbers** with fixed codes under
+> **Authentication → Sign-in method → Phone → Phone numbers for testing**.
 
 ### Option B — Supabase (open-source, Postgres)
 

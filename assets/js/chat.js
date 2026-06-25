@@ -6,13 +6,11 @@
 
   var S = window.SawaStore;
   var I = window.SawaI18n;
+  var B = window.SawaBackend;
 
-  /* ---------- session guard ---------- */
-  var user = S.currentUser();
-  if (!user) { window.location.replace("index.html"); return; }
-
-  /* ---------- state ---------- */
-  var chats = S.getChats(user.id);
+  /* ---------- state (user + chats are loaded asynchronously in boot()) ---------- */
+  var user = null;
+  var chats = [];
   var state = { activeId: null, search: "" };
   var typing = {};        // chatId -> true while a reply is being "typed"
   var replyTimers = {};   // chatId -> timeout handles
@@ -90,7 +88,7 @@
     });
   }
   function findChat(id) { return chats.filter(function (c) { return c.id === id; })[0]; }
-  function save() { S.saveChats(user.id, chats); }
+  function save() { B.saveChats(user, chats); }
 
   /* ---------- profile ---------- */
   function renderProfile() {
@@ -276,7 +274,7 @@
     var c = state.activeId && findChat(state.activeId);
     if (c) { setHeader(c); renderMessages(c); }
   }
-  function logout() { S.clearSession(); window.location.replace("index.html"); }
+  function logout() { B.logout().then(function () { window.location.replace("index.html"); }); }
 
   /* ---------- emoji ---------- */
   function renderEmojis() {
@@ -354,6 +352,19 @@
     $("#conv-back").addEventListener("click", function () { app.classList.remove("show-conversation"); state.activeId = null; renderList(); });
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
+  function boot() {
+    B.requireUser().then(function (u) {
+      user = u;
+      return B.loadChats(user);
+    }).then(function (loaded) {
+      chats = loaded || [];
+      init();
+    }).catch(function (e) {
+      console.error("Sawa: failed to start", e);
+      toast("Couldn't load your chats. Please reload.", "error");
+    });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
 })();

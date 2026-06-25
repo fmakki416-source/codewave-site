@@ -151,7 +151,8 @@
   }
 
   // Friendly demo conversations so a brand-new account is not empty.
-  function seedChats(user) {
+  // defaultChats() builds the array; seedChats() also persists it (local store).
+  function defaultChats(user) {
     var now = Date.now();
     var min = 60 * 1000, hr = 60 * min, day = 24 * hr;
     var first = (user.name || "there").trim().split(/\s+/)[0] || "there";
@@ -191,6 +192,10 @@
         lastReadTs: 0,
       }),
     ];
+    return chats;
+  }
+  function seedChats(user) {
+    var chats = defaultChats(user);
     saveChats(user.id, chats);
     return chats;
   }
@@ -205,7 +210,7 @@
     getTheme: getTheme, setTheme: setTheme,
     // chats
     getChats: getChats, saveChats: saveChats, makeChat: makeChat,
-    newMessage: newMessage, seedChats: seedChats,
+    newMessage: newMessage, seedChats: seedChats, defaultChats: defaultChats,
     // helpers
     hash: hash, colorFor: colorFor, initials: initials,
     normalizePhone: normalizePhone, isValidPhone: isValidPhone,

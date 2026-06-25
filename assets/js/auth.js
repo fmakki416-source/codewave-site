@@ -1,38 +1,32 @@
 /* ============================================================
    Sawa — auth modal logic (sign up / log in)
-   Methods: email + password, or UAE phone (+971) + OTP.
-   The OTP is generated and verified entirely in the browser
-   (no SMS is sent) because this demo has no backend.
+   Methods: email + password, or UAE phone (+971) + code.
+   All account actions go through window.SawaBackend, so this
+   works the same whether the real Firebase backend or the
+   local demo is active.
    ============================================================ */
 (function () {
   "use strict";
 
   var S = window.SawaStore;
   var I = window.SawaI18n;
+  var B = window.SawaBackend;
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
 
   /* ---------- toast ---------- */
   var toastHost;
   function toast(msg, kind) {
-    if (!toastHost) {
-      toastHost = document.createElement("div");
-      toastHost.className = "toast-host";
-      document.body.appendChild(toastHost);
-    }
+    if (!toastHost) { toastHost = document.createElement("div"); toastHost.className = "toast-host"; document.body.appendChild(toastHost); }
     var el = document.createElement("div");
     el.className = "toast" + (kind ? " " + kind : "");
     el.textContent = msg;
     toastHost.appendChild(el);
-    setTimeout(function () {
-      el.style.transition = "opacity .3s"; el.style.opacity = "0";
-      setTimeout(function () { el.remove(); }, 300);
-    }, 2600);
+    setTimeout(function () { el.style.transition = "opacity .3s"; el.style.opacity = "0"; setTimeout(function () { el.remove(); }, 300); }, 2800);
   }
 
   /* ---------- state ---------- */
-  var state = { mode: "signup", method: "email", phase: "form", otp: null, target: "" };
-
+  var state = { mode: "signup", method: "email", phase: "form", target: "" };
   var overlay, els = {};
 
   function cacheEls() {
@@ -42,7 +36,6 @@
       title: $("#auth-title"),
       tabs: overlay.querySelectorAll("[data-auth-tab]"),
       methods: overlay.querySelectorAll("[data-method]"),
-      methodRow: $("#auth-methods"),
       grpName: $("#grp-name"), grpEmail: $("#grp-email"),
       grpPass: $("#grp-password"), grpConfirm: $("#grp-confirm"), grpPhone: $("#grp-phone"),
       name: $("#f-name"), email: $("#f-email"), pass: $("#f-password"),
@@ -55,8 +48,16 @@
       submit: $("#auth-submit"),
       switch: $("#auth-switch"),
       form: $("#auth-form"),
+      verify: $("#otp-verify"),
     };
     return true;
+  }
+
+  /* ---------- busy state on buttons ---------- */
+  function busy(btn, on) {
+    if (!btn) return;
+    if (on) { btn.dataset.label = btn.textContent; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
+    else { btn.disabled = false; if (btn.dataset.label != null) btn.textContent = btn.dataset.label; }
   }
 
   /* ---------- error helpers ---------- */
@@ -82,13 +83,8 @@
     var email = state.method === "email";
 
     if (els.title) els.title.textContent = I.t(signup ? "tab_signup" : "tab_login");
-
-    els.tabs.forEach(function (t) {
-      t.classList.toggle("active", t.getAttribute("data-auth-tab") === state.mode);
-    });
-    els.methods.forEach(function (m) {
-      m.classList.toggle("active", m.getAttribute("data-method") === state.method);
-    });
+    els.tabs.forEach(function (t) { t.classList.toggle("active", t.getAttribute("data-auth-tab") === state.mode); });
+    els.methods.forEach(function (m) { m.classList.toggle("active", m.getAttribute("data-method") === state.method); });
 
     show(els.formScreen, state.phase === "form");
     show(els.otpScreen, state.phase === "otp");
@@ -99,19 +95,10 @@
     show(els.grpConfirm, email && signup);
     show(els.grpPhone, !email);
 
-    if (els.submit) {
-      els.submit.textContent = email
-        ? I.t(signup ? "btn_create" : "btn_login_action")
-        : I.t("btn_send_code");
-    }
+    if (els.submit) els.submit.textContent = email ? I.t(signup ? "btn_create" : "btn_login_action") : I.t("btn_send_code");
     if (els.switch) els.switch.textContent = I.t(signup ? "switch_to_login" : "switch_to_signup");
 
     I.apply(overlay);
-  }
-
-  function resetFields() {
-    [els.name, els.email, els.pass, els.confirm, els.phone].forEach(function (i) { if (i) i.value = ""; });
-    els.otpInputs.forEach(function (b) { b.value = ""; });
   }
 
   /* ---------- open / close ---------- */
@@ -133,31 +120,25 @@
 
   /* ---------- validation ---------- */
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   function validateName() {
     var v = els.name.value.trim();
     if (v.length < 2) { setError(els.name, "Please enter your name."); return null; }
     return v;
   }
 
-  /* ---------- OTP ---------- */
-  function genCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
-
-  function startOtp(target) {
-    state.otp = genCode();
+  /* ---------- OTP screen ---------- */
+  function startOtp(target, demoCode) {
     state.target = target;
     state.phase = "otp";
     render();
     if (els.otpTarget) els.otpTarget.textContent = target;
     if (els.otpHint) {
-      els.otpHint.innerHTML =
-        'Demo mode — no SMS is sent. Your verification code is <strong class="otp-code">' +
-        state.otp + "</strong>.";
+      if (demoCode) els.otpHint.innerHTML = 'Demo mode — no SMS is sent. Your verification code is <strong class="otp-code">' + demoCode + "</strong>.";
+      else els.otpHint.textContent = "Enter the 6-digit code we just sent you by SMS.";
     }
     els.otpInputs.forEach(function (b) { b.value = ""; });
     setTimeout(function () { if (els.otpInputs[0]) els.otpInputs[0].focus(); }, 50);
   }
-
   function readOtp() {
     var v = "";
     els.otpInputs.forEach(function (b) { v += (b.value || "").replace(/\D/g, "").slice(0, 1); });
@@ -166,8 +147,7 @@
 
   /* ---------- success ---------- */
   function finalize(user) {
-    S.setSession(user.id);
-    toast("Welcome to Sawa, " + (user.name.split(/\s+/)[0] || "") + "! 🎉", "success");
+    toast("Welcome to Sawa, " + ((user.name || "").split(/\s+/)[0] || "") + "! 🎉", "success");
     setTimeout(function () { window.location.href = "chat.html"; }, 550);
   }
 
@@ -179,56 +159,46 @@
     if (state.method === "email") {
       var name = signup ? validateName() : "x";
       if (signup && !name) return;
-
       var email = els.email.value.trim().toLowerCase();
       if (!EMAIL_RE.test(email)) { setError(els.email, "Enter a valid email address."); return; }
-
       var pass = els.pass.value;
       if (pass.length < 6) { setError(els.pass, "Password must be at least 6 characters."); return; }
+      if (signup && els.confirm.value !== pass) { setError(els.confirm, "Passwords don't match."); return; }
 
-      if (signup) {
-        if (els.confirm.value !== pass) { setError(els.confirm, "Passwords don't match."); return; }
-        if (S.findByEmail(email)) { setError(els.email, "An account with this email already exists."); return; }
-        finalize(S.createUser({ name: name, email: email, password: pass }));
-      } else {
-        var u = S.findByEmail(email);
-        if (!u) { setError(els.email, "No account found for this email."); return; }
-        if (!S.checkPassword(u, pass)) { setError(els.pass, "Incorrect password."); return; }
-        finalize(u);
-      }
+      busy(els.submit, true);
+      var p = signup ? B.signUpEmail({ name: name, email: email, password: pass })
+                     : B.loginEmail({ email: email, password: pass });
+      p.then(finalize).catch(function (e) {
+        busy(els.submit, false);
+        if (/password/i.test(e.message)) setError(els.pass, e.message);
+        else setError(els.email, e.message);
+      });
       return;
     }
 
-    /* phone method → send OTP */
+    /* phone method → request a code */
     var nm = signup ? validateName() : "x";
     if (signup && !nm) return;
+    if (!S.isValidPhone(els.phone.value)) { setError(els.phone, "Enter a valid UAE mobile number (e.g. 50 123 4567)."); return; }
+    var e164 = S.phoneE164(els.phone.value);
 
-    if (!S.isValidPhone(els.phone.value)) {
-      setError(els.phone, "Enter a valid UAE mobile number (e.g. 50 123 4567).");
-      return;
-    }
-    var existing = S.findByPhone(els.phone.value);
-    if (signup && existing) { setError(els.phone, "An account with this number already exists. Try logging in."); return; }
-    if (!signup && !existing) { setError(els.phone, "No account found for this number."); return; }
-
-    startOtp(S.phonePretty(els.phone.value));
+    busy(els.submit, true);
+    B.sendPhoneCode({ phoneE164: e164, name: nm, mode: state.mode, recaptchaContainerId: "recaptcha-container" })
+      .then(function (res) { busy(els.submit, false); startOtp(S.phonePretty(e164), res && res.demoCode); })
+      .catch(function (e) { busy(els.submit, false); setError(els.phone, e.message); });
   }
 
   /* ---------- verify (otp phase) ---------- */
   function verifyOtp() {
     var code = readOtp();
     if (code.length < 6) { toast("Enter the full 6-digit code.", "error"); return; }
-    if (code !== state.otp) {
-      toast("That code isn't right. Try again.", "error");
+    busy(els.verify, true);
+    B.confirmPhoneCode(code).then(finalize).catch(function (e) {
+      busy(els.verify, false);
+      toast(e.message || "That code isn't right.", "error");
       els.otpInputs.forEach(function (b) { b.value = ""; });
       if (els.otpInputs[0]) els.otpInputs[0].focus();
-      return;
-    }
-    if (state.mode === "signup") {
-      finalize(S.createUser({ name: els.name.value.trim(), phone: els.phone.value }));
-    } else {
-      finalize(S.findByPhone(els.phone.value));
-    }
+    });
   }
 
   /* ---------- wiring ---------- */
@@ -262,10 +232,8 @@
     els.methods.forEach(function (m) {
       m.addEventListener("click", function () { state.method = m.getAttribute("data-method"); state.phase = "form"; render(); });
     });
-
     els.switch.addEventListener("click", function () {
-      state.mode = state.mode === "signup" ? "login" : "signup";
-      state.phase = "form"; render();
+      state.mode = state.mode === "signup" ? "login" : "signup"; state.phase = "form"; render();
     });
 
     // live-clear errors while typing
@@ -279,7 +247,7 @@
       });
     });
 
-    // phone: digits + light grouping as the user types
+    // phone: keep digits and group lightly as the user types
     els.phone.addEventListener("input", function () {
       var d = els.phone.value.replace(/\D/g, "").replace(/^0+/, "").slice(0, 9);
       els.phone.value = d.replace(/^(\d{2})(\d{0,3})(\d{0,4}).*$/, function (_, a, b, c) {
@@ -287,30 +255,28 @@
       });
     });
 
-    $("#otp-verify").addEventListener("click", verifyOtp);
-    $("#otp-resend").addEventListener("click", function () { startOtp(state.target); toast("A new code was generated.", "success"); });
+    els.verify.addEventListener("click", verifyOtp);
+    $("#otp-resend").addEventListener("click", function () {
+      var btn = this;
+      busy(btn, true);
+      B.sendPhoneCode({ phoneE164: S.phoneE164(els.phone.value), name: els.name.value.trim(), mode: state.mode, recaptchaContainerId: "recaptcha-container" })
+        .then(function (res) {
+          busy(btn, false);
+          if (res && res.demoCode && els.otpHint) els.otpHint.innerHTML = 'Demo mode — no SMS is sent. Your verification code is <strong class="otp-code">' + res.demoCode + "</strong>.";
+          toast("A new code was sent.", "success");
+        })
+        .catch(function (e) { busy(btn, false); toast(e.message, "error"); });
+    });
     $("#otp-back").addEventListener("click", function () { state.phase = "form"; render(); els.phone.focus(); });
     wireOtpInputs();
 
     // open / close triggers
     document.querySelectorAll("[data-open-auth]").forEach(function (b) {
-      b.addEventListener("click", function (e) {
-        e.preventDefault();
-        open(b.getAttribute("data-open-auth"), b.getAttribute("data-auth-method"));
-      });
+      b.addEventListener("click", function (e) { e.preventDefault(); open(b.getAttribute("data-open-auth"), b.getAttribute("data-auth-method")); });
     });
-    overlay.querySelectorAll("[data-auth-close]").forEach(function (b) {
-      b.addEventListener("click", close);
-    });
+    overlay.querySelectorAll("[data-auth-close]").forEach(function (b) { b.addEventListener("click", close); });
     overlay.addEventListener("mousedown", function (e) { if (e.target === overlay) close(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && overlay.classList.contains("open")) close(); });
-
-    // if already logged in, offer to jump straight into the app
-    if (S.currentUser()) {
-      document.querySelectorAll("[data-open-auth]").forEach(function (b) {
-        b.addEventListener("click", function () {}, { once: false });
-      });
-    }
   }
 
   window.SawaAuth = { open: open, close: close };
