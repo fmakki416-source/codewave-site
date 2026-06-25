@@ -1,304 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FreshMart - Your Neighborhood Supermarket</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #222; line-height: 1.5; }
-  a { color: inherit; text-decoration: none; }
-  img { max-width: 100%; display: block; }
-
-  /* Header */
-  header { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #eee; z-index: 10; }
-  .nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
-  .logo { font-size: 1.5rem; font-weight: 800; color: #2d7a2d; }
-  .logo span { color: #f5a623; }
-  .nav ul { display: flex; gap: 2rem; list-style: none; }
-  .nav a:hover { color: #2d7a2d; }
-  .search { display: flex; align-items: center; background: #f4f4f4; border-radius: 24px; padding: 0.4rem 1rem; gap: 0.5rem; }
-  .search input { border: none; background: transparent; outline: none; width: 200px; }
-
-  /* Hero */
-  .hero { background: linear-gradient(135deg, #e8f5e9 0%, #fff3e0 100%); padding: 4rem 2rem; text-align: center; }
-  .hero h1 { font-size: 2.75rem; margin-bottom: 1rem; color: #1b4d1b; }
-  .hero p { font-size: 1.2rem; color: #555; margin-bottom: 2rem; }
-  .btn { display: inline-block; background: #2d7a2d; color: #fff; padding: 0.8rem 2rem; border-radius: 24px; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s; }
-  .btn:hover { background: #226322; }
-  .btn-outline { background: #fff; color: #2d7a2d; border: 2px solid #2d7a2d; margin-left: 0.5rem; }
-  .btn-outline:hover { background: #2d7a2d; color: #fff; }
-
-  /* Sections */
-  section { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
-  section h2 { font-size: 2rem; margin-bottom: 2rem; text-align: center; color: #1b4d1b; }
-
-  /* Categories */
-  .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; }
-  .category { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 2rem 1rem; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-  .category:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-  .category .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .category h3 { font-size: 1rem; color: #333; }
-
-  /* Products */
-  .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
-  .product { background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; transition: box-shadow 0.2s; }
-  .product:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-  .product .img-wrap { background: #fafafa; font-size: 4rem; text-align: center; padding: 2rem; }
-  .product .info { padding: 1rem; }
-  .product h3 { font-size: 1rem; margin-bottom: 0.25rem; }
-  .product .unit { color: #888; font-size: 0.85rem; margin-bottom: 0.5rem; }
-  .product .price-row { display: flex; align-items: center; justify-content: space-between; }
-  .product .price { font-weight: 700; color: #2d7a2d; font-size: 1.1rem; }
-  .product .old-price { text-decoration: line-through; color: #aaa; font-size: 0.85rem; margin-right: 0.5rem; }
-  .product .add { background: #2d7a2d; color: #fff; border: none; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
-  .product .add:hover { background: #226322; }
-  .badge { position: absolute; background: #f5a623; color: #fff; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; margin: 0.5rem; font-weight: 600; }
-  .product { position: relative; }
-
-  /* Deals banner */
-  .deals { background: #2d7a2d; color: #fff; border-radius: 16px; padding: 3rem; text-align: center; margin: 2rem auto; max-width: 1200px; }
-  .deals h2 { color: #fff; }
-  .deals p { margin-bottom: 1.5rem; opacity: 0.9; }
-
-  /* Features */
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; text-align: center; }
-  .feature .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .feature h3 { margin-bottom: 0.5rem; }
-  .feature p { color: #666; font-size: 0.95rem; }
-
-  /* Footer */
-  footer { background: #1b4d1b; color: #ddd; padding: 3rem 2rem 1rem; }
-  .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
-  .footer-grid h4 { color: #fff; margin-bottom: 1rem; }
-  .footer-grid ul { list-style: none; }
-  .footer-grid li { margin-bottom: 0.5rem; font-size: 0.9rem; }
-  .footer-grid a:hover { color: #f5a623; }
-  .copyright { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #2d5a2d; font-size: 0.85rem; opacity: 0.7; }
-
-  @media (max-width: 700px) {
-    .nav ul { display: none; }
-    .hero h1 { font-size: 2rem; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sawa — Simple, private messaging for the UAE</title>
+  <meta name="description" content="Sawa is a simple, private messenger built for the UAE. Sign up in seconds with your email or your +971 number." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2300a884'/><text y='72' x='50' font-size='60' text-anchor='middle'>%F0%9F%92%AC</text></svg>" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/landing.css" />
 </head>
 <body>
 
-<header>
-  <div class="nav">
-    <div class="logo">Fresh<span>Mart</span></div>
-    <ul>
-      <li><a href="#categories">Shop</a></li>
-      <li><a href="#deals">Deals</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <div class="search">
-      <span>🔍</span>
-      <input type="text" placeholder="Search groceries..." />
+  <!-- ===================== Header ===================== -->
+  <header class="site-header">
+    <nav class="site-nav">
+      <a class="brand" href="index.html">
+        <span class="logo-mark">💬</span><span>Sa<b>wa</b></span>
+      </a>
+      <div class="nav-links">
+        <a href="#features" data-i18n="nav_features">Features</a>
+        <a href="#security" data-i18n="nav_security">Security</a>
+        <a href="#get-started" data-i18n="nav_download">Get the app</a>
+      </div>
+      <div class="nav-spacer"></div>
+      <div class="nav-actions">
+        <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch language">عربي</button>
+        <button class="btn btn-ghost" type="button" data-open-auth="login" data-i18n="btn_login">Log in</button>
+        <button class="btn btn-primary" type="button" data-open-auth="signup" data-i18n="btn_signup">Sign up</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===================== Hero ===================== -->
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="hero-badge" data-i18n="hero_badge">🇦🇪 Built for the UAE</span>
+      <h1>
+        <span class="grad" data-i18n="hero_title">Simple, private messaging for the Emirates</span>
+      </h1>
+      <p class="hero-sub" data-i18n="hero_sub">
+        Chat, call and share with friends and family across the UAE. Sign up in seconds with your email or your +971 number.
+      </p>
+      <div class="hero-cta">
+        <button class="btn btn-primary btn-lg" type="button" data-open-auth="signup" data-i18n="hero_cta">Get started — it's free</button>
+        <a class="btn btn-lg" href="#features" data-i18n="hero_secondary">See how it works</a>
+      </div>
+      <p class="hero-note">
+        <span class="flag-strip"><i class="r"></i><i class="g"></i><i class="w"></i><i class="b"></i></span>
+        <span data-i18n="hero_note">Free · End-to-end encrypted · No ads</span>
+      </p>
+    </div>
+
+    <!-- Phone mock-up -->
+    <div class="phone-mock" aria-hidden="true">
+      <div class="phone-screen">
+        <div class="pm-top">
+          <span class="avatar">AA</span>
+          <div class="pm-meta"><b>Ahmed Al Mansoori</b><span>online</span></div>
+        </div>
+        <div class="pm-body">
+          <div class="pm-bubble in">Salam! Are we still on for Friday brunch? 🍽️<time>10:24</time></div>
+          <div class="pm-bubble out">Yes inshallah! JBR at 11? <time>10:25</time></div>
+          <div class="pm-bubble in">Perfect 👌 I'll book a table<time>10:25</time></div>
+          <div class="pm-bubble out">Yalla, see you there 🇦🇪<time>10:26</time></div>
+        </div>
+        <div class="pm-bottom">
+          <div class="pm-field">Type a message</div>
+          <div class="pm-send">➤</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Features ===================== -->
+  <section class="section" id="features">
+    <h2 class="section-title" data-i18n="features_title">Everything you need to stay close</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="ic">⚡</div>
+        <h3 data-i18n="f1_title">Lightning-fast chats</h3>
+        <p data-i18n="f1_desc">Send text, photos, voice notes and documents instantly — even on patchy networks.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic">🔒</div>
+        <h3 data-i18n="f2_title">Private by default</h3>
+        <p data-i18n="f2_desc">Every message is end-to-end encrypted, so only you and the people you message can read them.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic">📞</div>
+        <h3 data-i18n="f3_title">Voice & video calls</h3>
+        <p data-i18n="f3_desc">Crisp HD calls to anyone in the Emirates and around the world, included for free.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic">👥</div>
+        <h3 data-i18n="f4_title">Groups for everyone</h3>
+        <p data-i18n="f4_desc">Bring family, friends and your majlis together in groups of up to 1,024 people.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic">📱</div>
+        <h3 data-i18n="f5_title">Email or phone sign-up</h3>
+        <p data-i18n="f5_desc">Join with a +971 mobile number and a verification code, or simply use your email.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic">🌍</div>
+        <h3 data-i18n="f6_title">العربية &amp; English</h3>
+        <p data-i18n="f6_desc">A bilingual experience with full right-to-left support, made for the region.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Security ===================== -->
+  <div class="security">
+    <section class="section">
+      <div class="security-copy">
+        <span class="kicker" data-i18n="security_kicker">Privacy you can trust</span>
+        <h2 data-i18n="security_title">Your conversations stay yours</h2>
+        <p class="lead" data-i18n="security_desc">Sawa secures every chat with end-to-end encryption by default. Not even we can read your messages.</p>
+        <ul>
+          <li><span class="check">✓</span><span data-i18n="security_point1">End-to-end encrypted messages &amp; calls</span></li>
+          <li><span class="check">✓</span><span data-i18n="security_point2">No ads, no data resold to third parties</span></li>
+          <li><span class="check">✓</span><span data-i18n="security_point3">You control who can reach you</span></li>
+        </ul>
+      </div>
+      <div class="lock-art" aria-hidden="true">🔐</div>
+    </section>
+  </div>
+
+  <!-- ===================== CTA ===================== -->
+  <div class="cta-band" id="get-started">
+    <section class="section">
+      <h2 data-i18n="cta_title">Ready to start chatting?</h2>
+      <p data-i18n="cta_sub">Create your free Sawa account and say marhaba.</p>
+      <button class="btn btn-primary btn-lg" type="button" data-open-auth="signup" data-i18n="cta_button">Create free account</button>
+    </section>
+  </div>
+
+  <!-- ===================== Footer ===================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="brand"><span class="logo-mark">💬</span><span>Sa<b>wa</b></span></div>
+      <p data-i18n="footer_tagline">Messaging, made for the UAE.</p>
+      <p class="small">© 2026 Sawa. <span data-i18n="footer_rights">This is a demo project and is not affiliated with WhatsApp or Meta.</span></p>
+    </div>
+  </footer>
+
+  <!-- ===================== Auth modal ===================== -->
+  <div class="auth-overlay" id="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="auth-dialog">
+      <div class="auth-head">
+        <div class="brand"><span class="logo-mark">💬</span><span>Sa<b>wa</b></span></div>
+        <button class="auth-close" type="button" data-auth-close aria-label="Close">✕</button>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" type="button" data-auth-tab="signup" data-i18n="tab_signup">Sign up</button>
+        <button class="auth-tab" type="button" data-auth-tab="login" data-i18n="tab_login">Log in</button>
+      </div>
+
+      <div class="auth-body">
+        <!-- FORM screen -->
+        <div id="auth-form-screen">
+          <div class="method-row" id="auth-methods">
+            <button class="method-pill active" type="button" data-method="email">
+              <span>📧</span><span data-i18n="method_email">Email</span>
+            </button>
+            <button class="method-pill" type="button" data-method="phone">
+              <span>📱</span><span data-i18n="method_phone">Phone</span>
+            </button>
+          </div>
+
+          <h2 id="auth-title">Sign up</h2>
+
+          <form id="auth-form" novalidate>
+            <div class="field" id="grp-name">
+              <label for="f-name" data-i18n="label_name">Full name</label>
+              <input class="input" id="f-name" type="text" autocomplete="name" data-i18n-placeholder="ph_name" />
+              <div class="field-error"></div>
+            </div>
+
+            <div class="field" id="grp-email">
+              <label for="f-email" data-i18n="label_email">Email address</label>
+              <input class="input" id="f-email" type="email" autocomplete="email" data-i18n-placeholder="ph_email" />
+              <div class="field-error"></div>
+            </div>
+
+            <div class="field" id="grp-password">
+              <label for="f-password" data-i18n="label_password">Password</label>
+              <input class="input" id="f-password" type="password" autocomplete="current-password" data-i18n-placeholder="ph_password" />
+              <div class="field-error"></div>
+            </div>
+
+            <div class="field" id="grp-confirm">
+              <label for="f-confirm" data-i18n="label_confirm">Confirm password</label>
+              <input class="input" id="f-confirm" type="password" autocomplete="new-password" data-i18n-placeholder="ph_confirm" />
+              <div class="field-error"></div>
+            </div>
+
+            <div class="field" id="grp-phone">
+              <label for="f-phone" data-i18n="label_phone">Mobile number</label>
+              <div class="phone-input">
+                <span class="phone-prefix">🇦🇪 +971</span>
+                <input class="input" id="f-phone" type="tel" inputmode="numeric" autocomplete="tel" data-i18n-placeholder="ph_phone" />
+              </div>
+              <div class="field-error"></div>
+            </div>
+
+            <button class="btn btn-primary btn-block btn-lg" type="submit" id="auth-submit">Create account</button>
+          </form>
+
+          <button class="auth-switch" type="button" id="auth-switch">Already on Sawa? Log in</button>
+
+          <p class="auth-fineprint">
+            🔒 Demo project — accounts and messages are stored only in this browser. Do not use a real password.
+          </p>
+        </div>
+
+        <!-- OTP screen -->
+        <div id="auth-otp-screen" class="otp-screen" style="display:none">
+          <h3 data-i18n="otp_title">Enter your code</h3>
+          <p class="otp-target-line">We sent a 6-digit code to <b id="otp-target">+971 50 000 0000</b></p>
+          <div class="otp-boxes">
+            <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 1" />
+            <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 2" />
+            <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 3" />
+            <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 4" />
+            <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 5" />
+            <input class="otp-box" inputmode="numeric" maxlength="1" aria-label="Digit 6" />
+          </div>
+          <p class="otp-hint" id="otp-hint"></p>
+          <div class="otp-actions">
+            <button class="btn btn-primary btn-block btn-lg" type="button" id="otp-verify" data-i18n="btn_verify">Verify &amp; continue</button>
+          </div>
+          <div class="otp-links">
+            <button type="button" id="otp-back" data-i18n="otp_back">← Use a different number</button>
+            <button type="button" id="otp-resend" data-i18n="otp_resend">Resend code</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</header>
 
-<div class="hero">
-  <h1>Fresh Groceries, Delivered Daily</h1>
-  <p>Locally sourced produce, pantry staples, and everyday essentials — all in one place.</p>
-  <a href="#categories" class="btn">Shop Now</a>
-  <a href="#deals" class="btn btn-outline">View Deals</a>
-</div>
-
-<section id="categories">
-  <h2>Shop by Category</h2>
-  <div class="categories">
-    <div class="category"><div class="icon">🥬</div><h3>Fresh Produce</h3></div>
-    <div class="category"><div class="icon">🥛</div><h3>Dairy & Eggs</h3></div>
-    <div class="category"><div class="icon">🍞</div><h3>Bakery</h3></div>
-    <div class="category"><div class="icon">🥩</div><h3>Meat & Seafood</h3></div>
-    <div class="category"><div class="icon">🧃</div><h3>Beverages</h3></div>
-    <div class="category"><div class="icon">🍿</div><h3>Snacks</h3></div>
-    <div class="category"><div class="icon">🧻</div><h3>Household</h3></div>
-    <div class="category"><div class="icon">❄️</div><h3>Frozen</h3></div>
-  </div>
-</section>
-
-<section id="featured">
-  <h2>Featured Products</h2>
-  <div class="products">
-    <div class="product">
-      <span class="badge">-20%</span>
-      <div class="img-wrap">🍎</div>
-      <div class="info">
-        <h3>Organic Apples</h3>
-        <div class="unit">1 kg bag</div>
-        <div class="price-row">
-          <div><span class="old-price">$4.99</span><span class="price">$3.99</span></div>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <div class="img-wrap">🥑</div>
-      <div class="info">
-        <h3>Avocados</h3>
-        <div class="unit">Pack of 4</div>
-        <div class="price-row">
-          <span class="price">$5.49</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <span class="badge">NEW</span>
-      <div class="img-wrap">🥛</div>
-      <div class="info">
-        <h3>Whole Milk</h3>
-        <div class="unit">1 gallon</div>
-        <div class="price-row">
-          <span class="price">$3.29</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <div class="img-wrap">🍞</div>
-      <div class="info">
-        <h3>Sourdough Bread</h3>
-        <div class="unit">Fresh, 500g</div>
-        <div class="price-row">
-          <span class="price">$4.79</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <span class="badge">-15%</span>
-      <div class="img-wrap">🥚</div>
-      <div class="info">
-        <h3>Free-Range Eggs</h3>
-        <div class="unit">Dozen</div>
-        <div class="price-row">
-          <div><span class="old-price">$6.49</span><span class="price">$5.49</span></div>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <div class="img-wrap">🍌</div>
-      <div class="info">
-        <h3>Bananas</h3>
-        <div class="unit">Per lb</div>
-        <div class="price-row">
-          <span class="price">$0.69</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <div class="img-wrap">🧀</div>
-      <div class="info">
-        <h3>Cheddar Cheese</h3>
-        <div class="unit">Block, 250g</div>
-        <div class="price-row">
-          <span class="price">$6.99</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-    <div class="product">
-      <span class="badge">HOT</span>
-      <div class="img-wrap">🍅</div>
-      <div class="info">
-        <h3>Vine Tomatoes</h3>
-        <div class="unit">500g</div>
-        <div class="price-row">
-          <span class="price">$2.99</span>
-          <button class="add">Add +</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div id="deals" class="deals">
-  <h2>Weekend Flash Sale</h2>
-  <p>Save up to 30% on hundreds of items — this weekend only.</p>
-  <a href="#featured" class="btn" style="background:#f5a623">Grab the Deals</a>
-</div>
-
-<section id="about">
-  <h2>Why Choose FreshMart</h2>
-  <div class="features">
-    <div class="feature">
-      <div class="icon">🚚</div>
-      <h3>Free Delivery</h3>
-      <p>Free same-day delivery on orders over $40.</p>
-    </div>
-    <div class="feature">
-      <div class="icon">🌱</div>
-      <h3>Locally Sourced</h3>
-      <p>Partnering with 50+ local farms and producers.</p>
-    </div>
-    <div class="feature">
-      <div class="icon">💰</div>
-      <h3>Best Prices</h3>
-      <p>Weekly deals and a price-match guarantee.</p>
-    </div>
-    <div class="feature">
-      <div class="icon">🕒</div>
-      <h3>Open 7 Days</h3>
-      <p>7am - 10pm, every day of the week.</p>
-    </div>
-  </div>
-</section>
-
-<footer id="contact">
-  <div class="footer-grid">
-    <div>
-      <h4>FreshMart</h4>
-      <p style="font-size:0.9rem;opacity:0.85;">Your neighborhood supermarket for fresh, affordable groceries.</p>
-    </div>
-    <div>
-      <h4>Shop</h4>
-      <ul>
-        <li><a href="#categories">Categories</a></li>
-        <li><a href="#featured">Featured</a></li>
-        <li><a href="#deals">Deals</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4>Company</h4>
-      <ul>
-        <li><a href="#about">About Us</a></li>
-        <li><a href="#">Careers</a></li>
-        <li><a href="#">Store Locator</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4>Contact</h4>
-      <ul>
-        <li>📍 123 Market St, Springfield</li>
-        <li>📞 (555) 123-4567</li>
-        <li>✉️ hello@freshmart.com</li>
-      </ul>
-    </div>
-  </div>
-  <div class="copyright">© 2026 FreshMart. All rights reserved.</div>
-</footer>
-
-<script>
-  // Simple "add to cart" feedback
-  document.querySelectorAll('.add').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const original = btn.textContent;
-      btn.textContent = '✓ Added';
-      btn.style.background = '#f5a623';
-      setTimeout(() => {
-        btn.textContent = original;
-        btn.style.background = '';
-      }, 1200);
-    });
-  });
-</script>
-
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script>
+    // Apply saved theme + language on load, wire the language toggle.
+    (function () {
+      document.documentElement.setAttribute("data-theme", window.SawaStore.getTheme());
+      window.SawaI18n.apply();
+      var lt = document.getElementById("lang-toggle");
+      function syncLabel() { lt.textContent = window.SawaI18n.current() === "ar" ? "EN" : "عربي"; }
+      syncLabel();
+      lt.addEventListener("click", function () { window.SawaI18n.toggle(); syncLabel(); });
+    })();
+  </script>
 </body>
 </html>
