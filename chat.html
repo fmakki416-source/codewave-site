@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Sawa</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2300a884'/><text y='72' x='50' font-size='60' text-anchor='middle'>%F0%9F%92%AC</text></svg>" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/chat.css" />
+  <script>
+    // set theme before paint to avoid a flash
+    try { document.documentElement.setAttribute("data-theme", localStorage.getItem("sawa:theme") === "dark" ? "dark" : "light");
+          document.documentElement.dir = localStorage.getItem("sawa:lang") === "ar" ? "rtl" : "ltr"; } catch (e) {}
+  </script>
+</head>
+<body>
+
+  <div class="app" id="app">
+    <div class="frame">
+
+      <!-- ===================== Sidebar ===================== -->
+      <aside class="sidebar">
+        <div class="side-header">
+          <div class="me">
+            <span class="avatar" id="me-avatar">ME</span>
+            <div class="who">
+              <b id="me-name">You</b>
+              <span id="me-handle"></span>
+            </div>
+          </div>
+          <button class="icon-btn" id="new-chat-btn" type="button" title="New chat" aria-label="New chat">✚</button>
+          <div class="menu-wrap">
+            <button class="icon-btn" id="menu-btn" type="button" title="Menu" aria-label="Menu">⋮</button>
+            <div class="menu" id="side-menu">
+              <button type="button" id="m-newchat"><span>✚</span><span data-i18n="menu_newchat">New chat</span></button>
+              <button type="button" id="m-theme"><span>🌗</span><span data-i18n="menu_theme">Switch theme</span></button>
+              <button type="button" id="m-lang"><span>🌐</span><span data-i18n="menu_language">العربية</span></button>
+              <button type="button" id="m-logout" class="danger"><span>↩︎</span><span data-i18n="menu_logout">Log out</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="search-bar">
+          <div class="search-box">
+            <span>🔍</span>
+            <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" placeholder="Search or start a new chat" />
+          </div>
+        </div>
+
+        <div class="chat-list" id="chat-list"></div>
+      </aside>
+
+      <!-- ===================== Conversation panel ===================== -->
+      <main class="chat-panel">
+        <!-- empty state -->
+        <div class="panel-empty" id="panel-empty">
+          <div class="pe-art">💬</div>
+          <h2 data-i18n="empty_title">Sawa Web</h2>
+          <p data-i18n="empty_sub">Select a chat to start messaging. Your messages are end-to-end encrypted.</p>
+          <p class="pe-lock" data-i18n="encryption_note">🔒 End-to-end encrypted</p>
+        </div>
+
+        <!-- active conversation -->
+        <section class="conversation" id="conversation" hidden>
+          <header class="conv-header">
+            <button class="icon-btn back" id="conv-back" type="button" aria-label="Back">←</button>
+            <span class="avatar" id="ch-avatar"></span>
+            <div class="ch-meta">
+              <b id="ch-name"></b>
+              <span id="ch-status"></span>
+            </div>
+          </header>
+
+          <div class="messages" id="messages"></div>
+
+          <div class="emoji-pop" id="emoji-pop"><div class="grid" id="emoji-grid"></div></div>
+
+          <div class="composer">
+            <button class="icon-btn" id="emoji-btn" type="button" title="Emoji" aria-label="Emoji">😊</button>
+            <div class="field-wrap">
+              <textarea id="composer-input" rows="1" data-i18n-placeholder="msg_placeholder" placeholder="Type a message"></textarea>
+            </div>
+            <button class="send-btn" id="send-btn" type="button" aria-label="Send">➤</button>
+          </div>
+        </section>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ===================== New-chat modal ===================== -->
+  <div class="modal-overlay" id="newchat-overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 data-i18n="newchat_title">Start a new chat</h3>
+        <p data-i18n="newchat_sub">Pick a contact below or enter a name.</p>
+      </div>
+      <div class="modal-body">
+        <div class="suggested" id="suggested"></div>
+        <div class="field">
+          <input class="input" id="newchat-name" type="text" data-i18n-placeholder="newchat_name_ph" placeholder="Contact name" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost btn-block" type="button" id="newchat-cancel">Cancel</button>
+          <button class="btn btn-primary btn-block" type="button" id="newchat-start" data-i18n="newchat_create">Start chat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="assets/js/backend.js"></script>
+  <script src="assets/js/chat.js"></script>
+</body>
+</html>
